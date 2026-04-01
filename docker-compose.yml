@@ -1,0 +1,14 @@
+services:
+
+  postgres:
+    image: "postgres"
+    platform: linux/amd64
+    container_name: bd_postgres_book
+    environment:
+      POSTGRES_USER: book
+      POSTGRES_PASSWORD: book
+      POSTGRES_DB: book
+    ports:
+      - 5433:5432
+    labels:
+      org.springframework.boot.service-connection: postgres

@@ -1,0 +1,23 @@
+server:
+  port: 8081
+logging:
+  level:
+    org.springframework.jdbc.core: DEBUG
+    org.springframework.jdbc.core.StatementCreatorUtils: TRACE
+    com.rent.hata: DEBUG
+
+spring:
+  application:
+    name: healthbook
+  datasource:
+    url: jdbc:postgresql://localhost:5433/book
+    username: book
+    password: book
+    driver-class-name: org.postgresql.Driver
+  liquibase:
+    change-log: classpath:liquibase/changelog-master.yml
+
+default:
+  page:
+    size: 5
+    number: 0
