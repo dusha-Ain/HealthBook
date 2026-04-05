@@ -12,5 +12,5 @@ CREATE TABLE IF NOT EXISTS profile
     phone VARCHAR(15) UNIQUE ,
     registration_date DATE NOT NULL,
     is_fired BOOLEAN NOT NULL,
-    role VARCHAR(10) CHECK ( role in ('ADMIN', 'USER') )
+    role VARCHAR(10) CHECK ( role in ('ADMIN', 'DOCTOR', 'CONSULTANT', 'USER') )
 )
