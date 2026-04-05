@@ -1,6 +1,7 @@
 package com.rent.healthbook.consultant.service;
 
 import com.rent.healthbook.consultant.entity.ConsultantEntity;
+import com.rent.healthbook.web.exception.EntityNotFoundInternalException;
 import com.rent.healthbook.web.exception.EntityToManyResultException;
 import com.rent.healthbook.web.exception.ValidationException;
 import org.springframework.stereotype.Component;
@@ -14,14 +15,14 @@ public class ConsultantValidator {
 
     public ConsultantEntity validateConsultantExistsAfterCreate(
             Optional<ConsultantEntity> consultant, UUID id) {
-        return consultant.orElseThrow(() -> new ValidationException(
+        return consultant.orElseThrow(() -> new EntityNotFoundInternalException(
                 String.format("Consultant not found after create by profile id = %s", id)));
     }
 
 
     public ConsultantEntity validateConsultantCheckExists(
             Optional<ConsultantEntity> consultant, UUID id) {
-        return consultant.orElseThrow(() -> new ValidationException(
+        return consultant.orElseThrow(() -> new EntityNotFoundInternalException(
                 String.format("Consultant not found by id = %s", id)));
     }
 

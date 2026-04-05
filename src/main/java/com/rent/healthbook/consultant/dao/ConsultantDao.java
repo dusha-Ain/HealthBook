@@ -3,7 +3,6 @@ package com.rent.healthbook.consultant.dao;
 import com.rent.healthbook.consultant.entity.ConsultantEntity;
 import com.rent.healthbook.consultant.entity.ConsultantsEntity;
 import com.rent.healthbook.consultant.service.ConsultantValidator;
-import com.rent.healthbook.profile.entity.ProfilesEntity;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;

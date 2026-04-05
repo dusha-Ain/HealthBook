@@ -1,8 +1,7 @@
 package com.rent.healthbook.consultant.controller;
 
-import com.rent.healthbook.consultant.dto.Consultants;
-import com.rent.healthbook.profile.controller.ProfileController;
 import com.rent.healthbook.consultant.dto.Consultant;
+import com.rent.healthbook.consultant.dto.Consultants;
 import com.rent.healthbook.consultant.service.ConsultantService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -21,7 +20,7 @@ import java.util.UUID;
 @Tag(name = "Консультанты", description = "Управление профилями-консультантами")
 public class ConsultantController {
 
-    Logger logger = LoggerFactory.getLogger(ProfileController.class);
+    Logger logger = LoggerFactory.getLogger(ConsultantController.class);
     private final ConsultantService service;
 
     public ConsultantController(ConsultantService service) {

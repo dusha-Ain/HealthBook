@@ -3,3 +3,5 @@ databaseChangeLog:
       file: liquibase/migrations/01_init-profile.sql
   - include:
       file: liquibase/migrations/02_init-consultant.sql
+  - include:
+      file: liquibase/migrations/03_init-doctor.sql

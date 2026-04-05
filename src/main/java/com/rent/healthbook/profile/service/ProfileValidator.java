@@ -1,10 +1,7 @@
 package com.rent.healthbook.profile.service;
 
 import com.rent.healthbook.profile.entity.ProfileEntity;
-import com.rent.healthbook.web.exception.BadCredentialsPasswordException;
-import com.rent.healthbook.web.exception.EntityNotFoundException;
-import com.rent.healthbook.web.exception.EntityToManyResultException;
-import com.rent.healthbook.web.exception.ValidationException;
+import com.rent.healthbook.web.exception.*;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -37,12 +34,12 @@ public class ProfileValidator {
     }
 
     public ProfileEntity validateProfileExistsAfterCreate(Optional<ProfileEntity> profile, String phone) {
-        return profile.orElseThrow(() -> new ValidationException(
+        return profile.orElseThrow(() -> new EntityNotFoundInternalException(
                 String.format("Profile not found after create by phone = %s", phone)));
     }
 
     public ProfileEntity validateProfileExistsAfterUpdate(Optional<ProfileEntity> profile, UUID id) {
-        return profile.orElseThrow(() -> new ValidationException(
+        return profile.orElseThrow(() -> new EntityNotFoundInternalException(
                 String.format("Profile by id = %s not found after update", id)));
     }
 

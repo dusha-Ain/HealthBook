@@ -1,5 +1,6 @@
 package com.rent.healthbook.consultant.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
 
@@ -13,6 +14,7 @@ public record Consultant(
         Boolean isOnline,
 
         @NotNull
+        @Schema(description = "Идентификатор профиля")
         UUID idProfile
 ) {
 }
