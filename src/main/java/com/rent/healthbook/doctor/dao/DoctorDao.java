@@ -3,6 +3,7 @@ package com.rent.healthbook.doctor.dao;
 import com.rent.healthbook.doctor.entity.DoctorEntity;
 import com.rent.healthbook.doctor.entity.DoctorsEntity;
 import com.rent.healthbook.doctor.service.DoctorValidator;
+import com.rent.healthbook.web.Pageable;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -16,14 +17,11 @@ public class DoctorDao {
 
     private final NamedParameterJdbcTemplate template;
     private final DoctorRowMapper rowMapper;
-    private final DoctorValidator doctorValidator;
 
     public DoctorDao(NamedParameterJdbcTemplate template,
-                     DoctorRowMapper rowMapper,
-                     DoctorValidator consultantValidator) {
+                     DoctorRowMapper rowMapper) {
         this.template = template;
         this.rowMapper = rowMapper;
-        this.doctorValidator = consultantValidator;
     }
 
     public Optional<DoctorEntity> getDoctorByProfileIdWithLock(UUID id) {
@@ -32,7 +30,7 @@ public class DoctorDao {
                 template.query(sqlLock,
                         new MapSqlParameterSource("idProfile", id),
                         rowMapper);
-        return doctorValidator.validateProfileIdSearchResult(doctor, id);
+        return DoctorValidator.validateProfileIdSearchResult(doctor, id);
     }
 
     public Optional<DoctorEntity> getDoctorByProfileId(UUID id) {
@@ -41,7 +39,7 @@ public class DoctorDao {
                 template.query(sqlLock,
                         new MapSqlParameterSource("idProfile", id),
                         rowMapper);
-        return doctorValidator.validateProfileIdSearchResult(doctor, id);
+        return DoctorValidator.validateProfileIdSearchResult(doctor, id);
     }
 
     public Optional<DoctorEntity> getDoctorByIdWithLock(UUID id) {
@@ -50,7 +48,7 @@ public class DoctorDao {
                 template.query(sqlLock,
                         new MapSqlParameterSource("id", id),
                         rowMapper);
-        return doctorValidator.validateIdSearchResult(doctor, id);
+        return DoctorValidator.validateIdSearchResult(doctor, id);
     }
 
     public Optional<DoctorEntity> getDoctorById(UUID id) {
@@ -59,7 +57,7 @@ public class DoctorDao {
                 template.query(sqlLock,
                         new MapSqlParameterSource("id", id),
                         rowMapper);
-        return doctorValidator.validateIdSearchResult(doctor, id);
+        return DoctorValidator.validateIdSearchResult(doctor, id);
     }
 
     public Boolean createDoctor(DoctorEntity doctor){
@@ -98,9 +96,12 @@ public class DoctorDao {
         return  1 == template.update(sql, map);
     }
 
-    public DoctorsEntity getAll() {
-        String sql = "SELECT * FROM doctor_profile";
-        return new DoctorsEntity(template.query(sql, rowMapper));
+    public DoctorsEntity getAllByFilter(Pageable filter) {
+        String sql = "SELECT * FROM doctor_profile LIMIT :limit OFFSET :offset";
+        var map = new MapSqlParameterSource()
+                .addValue("limit", filter.getPageSize())
+                .addValue("offset", filter.getPageSize() * (filter.getPageNumber() - 1));
+        return new DoctorsEntity(template.query(sql, map, rowMapper));
     }
 
     public boolean deleteDoctor(UUID id){

@@ -1,12 +1,10 @@
 package com.rent.healthbook.doctor.controller;
 
-import com.rent.healthbook.consultant.dto.Consultants;
 import com.rent.healthbook.doctor.dto.Doctor;
 import com.rent.healthbook.doctor.dto.DoctorUpdate;
 import com.rent.healthbook.doctor.dto.Doctors;
 import com.rent.healthbook.doctor.service.DoctorService;
-import com.rent.healthbook.profile.dto.Profile;
-import com.rent.healthbook.profile.dto.ProfileUpdate;
+import com.rent.healthbook.web.Pageable;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -56,10 +54,19 @@ public class DoctorController {
 
     @Operation(summary = "Вывести всех докторов")
     @GetMapping("/")
-    public ResponseEntity<Doctors> getAllDoctors() {
+    public ResponseEntity<Doctors> getAllDoctorsByFilter(
+            @Parameter(description = "Количество докторов для вывода")
+            @RequestParam(name = "pageSize", required = false) Integer pageSize,
+
+            @Parameter(description = "Номер страницы поиска")
+            @RequestParam(name = "pageNumber", required = false) Integer pageNumber
+    ) {
         logger.info("Called getAllDoctors");
+        var filter = new Pageable();
+        filter.setPageNumber(pageNumber);
+        filter.setPageSize(pageSize);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(service.getAllDoctors());
+                .body(service.getAllDoctorsByFilter(filter));
     }
 
 

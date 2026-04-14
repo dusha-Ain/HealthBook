@@ -20,4 +20,4 @@ spring:
 default:
   page:
     size: 5
-    number: 0
+    number: 1

@@ -5,9 +5,12 @@ import com.rent.healthbook.doctor.dto.Doctor;
 import com.rent.healthbook.doctor.dto.DoctorUpdate;
 import com.rent.healthbook.doctor.dto.Doctors;
 import com.rent.healthbook.doctor.entity.DoctorEntity;
+import com.rent.healthbook.web.AppConfig;
+import com.rent.healthbook.web.Pageable;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -15,26 +18,23 @@ public class DoctorService {
 
     private final DoctorMapper mapper;
     private final DoctorDao doctorDao;
-    private final DoctorValidator doctorValidator;
 
     public DoctorService(DoctorMapper mapper,
-                         DoctorDao doctorDao,
-                         DoctorValidator doctorValidator) {
+                         DoctorDao doctorDao) {
         this.mapper = mapper;
         this.doctorDao = doctorDao;
-        this.doctorValidator = doctorValidator;
     }
 
     public Doctor addDoctor(@Valid Doctor doctor) {
         var maybeDoctor = doctorDao.getDoctorByProfileIdWithLock(doctor.idProfile());
-        doctorValidator.validateDoctorNotExists(maybeDoctor, doctor.idProfile());
-        doctorValidator.validateStartEndDate(doctor.workStart(), doctor.workEnd());
+        DoctorValidator.validateDoctorNotExists(maybeDoctor, doctor.idProfile());
+        DoctorValidator.validateStartEndDate(doctor.workStart(), doctor.workEnd());
         var doctorEntity = mapper.toEntity(doctor);
-        doctorValidator.validateCreationResult(
+        DoctorValidator.validateCreationResult(
                 doctorDao.createDoctor(doctorEntity),
                 doctor.idProfile());
         DoctorEntity doctorCreated =
-                doctorValidator.validateDoctorExistsAfterCreate(
+                DoctorValidator.validateDoctorExistsAfterCreate(
                         doctorDao.getDoctorByProfileId(doctorEntity.getIdProfile()),
                         doctor.idProfile());
         return mapper.toDomainDoctor(doctorCreated);
@@ -42,29 +42,31 @@ public class DoctorService {
 
     public Doctor getDoctorById(UUID id) {
         DoctorEntity findDoctor =
-                doctorValidator.validateDoctorCheckExists(doctorDao.getDoctorById(id), id);
+                DoctorValidator.validateDoctorCheckExists(doctorDao.getDoctorById(id), id);
         return mapper.toDomainDoctor(findDoctor);
     }
 
-    public Doctors getAllDoctors() {
-        var doctorsEntity = doctorDao.getAll();
+    public Doctors getAllDoctorsByFilter(Pageable filter) {
+        filter.setPageSize(Objects.requireNonNullElse(filter.getPageSize(), AppConfig.getDefaultPageSize()));
+        filter.setPageNumber(Objects.requireNonNullElse(filter.getPageNumber(), AppConfig.getDefaultPageNumber()));
+        var doctorsEntity = doctorDao.getAllByFilter(filter);
         return new Doctors(doctorsEntity.list.stream()
                 .map(mapper::toDomainDoctor).toList());
     }
 
     public Doctor updateDoctor(UUID id, @Valid DoctorUpdate doctor) {
         DoctorEntity findDoctor =
-                doctorValidator.validateDoctorCheckExists(doctorDao.getDoctorByIdWithLock(id), id);
-        doctorValidator.validateStartEndDate(doctor.workStart(), doctor.workEnd());
+                DoctorValidator.validateDoctorCheckExists(doctorDao.getDoctorByIdWithLock(id), id);
+        DoctorValidator.validateStartEndDate(doctor.workStart(), doctor.workEnd());
         var updateDoctor = mapper.toEntity(findDoctor, doctor);
-        doctorValidator.validateUpdateResult(doctorDao.updateDoctor(updateDoctor), id);
+        DoctorValidator.validateUpdateResult(doctorDao.updateDoctor(updateDoctor), id);
         DoctorEntity savedDoctor =
-                doctorValidator.validateDoctorExistsAfterUpdate(doctorDao.getDoctorById(id), id);
+                DoctorValidator.validateDoctorExistsAfterUpdate(doctorDao.getDoctorById(id), id);
         return mapper.toDomainDoctor(savedDoctor);
     }
 
     public void deleteDoctor(UUID id) {
-        doctorValidator.validateDoctorCheckExists(doctorDao.getDoctorByIdWithLock(id), id);
-        doctorValidator.validateDeleteResult(doctorDao.deleteDoctor(id), id);
+        DoctorValidator.validateDoctorCheckExists(doctorDao.getDoctorByIdWithLock(id), id);
+        DoctorValidator.validateDeleteResult(doctorDao.deleteDoctor(id), id);
     }
 }

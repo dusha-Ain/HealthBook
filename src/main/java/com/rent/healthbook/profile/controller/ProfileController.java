@@ -1,6 +1,7 @@
 package com.rent.healthbook.profile.controller;
 
 import com.rent.healthbook.profile.dto.*;
+import com.rent.healthbook.profile.service.ProfileSearchFilter;
 import com.rent.healthbook.profile.service.ProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -13,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
-
 
 
 @RestController
@@ -55,10 +55,31 @@ public class ProfileController {
 
     @Operation(summary = "Вывести все профили")
     @GetMapping("/")
-    public ResponseEntity<Profiles> getAllProfiles() {
+    public ResponseEntity<Profiles> getAllProfilesByFilter(
+            @Parameter(description = "Почта профиля")
+            @RequestParam(name = "email", required = false) String email,
+
+            @Parameter(description = "Фамиля профиля")
+            @RequestParam(name = "lastName", required = false) String lastName,
+
+            @Parameter(description = "Имя профиля")
+            @RequestParam(name = "firstNam", required = false) String firstName,
+
+            @Parameter(description = "Отчество профиля")
+            @RequestParam(name = "patronymic", required = false) String patronymic,
+
+            @Parameter(description = "Количество профилей для вывода")
+            @RequestParam(name = "pageSize", required = false) Integer pageSize,
+
+            @Parameter(description = "Номер страницы поиска")
+            @RequestParam(name = "pageNumber", required = false) Integer pageNumber
+    ) {
         logger.info("Called getAllProfiles");
+        var filter = new ProfileSearchFilter(email, lastName,
+                firstName, patronymic,
+                pageSize, pageNumber);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(service.getAllProfiles());
+                .body(service.getAllProfilesByFilter(filter));
     }
 
 
@@ -81,7 +102,7 @@ public class ProfileController {
             @Parameter(description = "Идентифкатор профиля")
             @PathVariable UUID id,
             @Parameter(description = "Данные о смене пароля")
-            @Valid @RequestBody ProfilePassword password){
+            @Valid @RequestBody ProfilePassword password) {
         logger.info("Called updateProfilePassword by id = {}", id);
         service.updateProfilePassword(id, password);
         return ResponseEntity.status(HttpStatus.OK).build();

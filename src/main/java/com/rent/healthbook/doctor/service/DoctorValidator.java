@@ -14,46 +14,46 @@ import java.util.UUID;
 @Component
 public class DoctorValidator {
 
-    public DoctorEntity validateDoctorExistsAfterCreate(
+    public static DoctorEntity validateDoctorExistsAfterCreate(
             Optional<DoctorEntity> doctor, UUID id) {
         return doctor.orElseThrow(() -> new EntityNotFoundInternalException(
                 String.format("Doctor not found after create by profile id = %s", id)));
     }
 
-    public DoctorEntity validateDoctorExistsAfterUpdate(
+    public static DoctorEntity validateDoctorExistsAfterUpdate(
             Optional<DoctorEntity> doctor, UUID id) {
         return doctor.orElseThrow(() -> new EntityNotFoundInternalException(
                 String.format("Doctor not found after update by id = %s", id)));
     }
 
-    public DoctorEntity validateDoctorCheckExists(
+    public static DoctorEntity validateDoctorCheckExists(
             Optional<DoctorEntity> doctor, UUID id) {
         return doctor.orElseThrow(() -> new ValidationException(
                 String.format("Doctor not found by id = %s", id)));
     }
 
-    public void validateCreationResult(boolean createResult, UUID id) {
+    public static void validateCreationResult(boolean createResult, UUID id) {
         if (!createResult) {
             throw new ValidationException(
                     String.format("Doctor creation failed by profile id = %s", id));
         }
     }
 
-    public void validateUpdateResult(boolean updateResult, UUID id) {
+    public static void validateUpdateResult(boolean updateResult, UUID id) {
         if (!updateResult) {
             throw new ValidationException(
                     String.format("Doctor update failed by id = %s", id));
         }
     }
 
-    public void validateDeleteResult(boolean deleteResult, UUID id) {
+    public static void validateDeleteResult(boolean deleteResult, UUID id) {
         if (!deleteResult) {
             throw new ValidationException(
                     String.format("Doctor delete failed by id = %s", id));
         }
     }
 
-    public void validateDoctorNotExists(
+    public static void validateDoctorNotExists(
             Optional<DoctorEntity> existingDoctor, UUID id) {
         if (existingDoctor.isPresent()) {
             throw new ValidationException(
@@ -61,13 +61,13 @@ public class DoctorValidator {
         }
     }
 
-    public void validateStartEndDate(Date start, Date end){
+    public static void validateStartEndDate(Date start, Date end){
         if (end == null) return;
         if (start.after(end)) throw new ValidationException("Start date should be after end date");
     }
 
 
-    public Optional<DoctorEntity> validateProfileIdSearchResult(
+    public static Optional<DoctorEntity> validateProfileIdSearchResult(
             List<DoctorEntity> doctor, UUID id) {
         if (doctor.size() > 1) {
             throw new EntityToManyResultException(
@@ -79,7 +79,7 @@ public class DoctorValidator {
         return doctor.stream().findFirst();
     }
 
-    public Optional<DoctorEntity> validateIdSearchResult(
+    public static Optional<DoctorEntity> validateIdSearchResult(
             List<DoctorEntity> doctor, UUID id) {
         if (doctor.size() > 1) {
             throw new EntityToManyResultException(
