@@ -1,9 +1,11 @@
 package com.rent.healthbook.profile.dao;
 
 
+import com.rent.healthbook.web.Pageable;
 import com.rent.healthbook.profile.dto.enums.ProfileRole;
 import com.rent.healthbook.profile.entity.ProfileEntity;
 import com.rent.healthbook.profile.entity.ProfilesEntity;
+import com.rent.healthbook.profile.service.ProfileSearchFilter;
 import com.rent.healthbook.profile.service.ProfileValidator;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -19,12 +21,11 @@ public class ProfileDao {
 
     private final NamedParameterJdbcTemplate template;
     private final ProfileRowMapper rowMapper;
-    private final ProfileValidator profileValidator;
 
-    public ProfileDao(NamedParameterJdbcTemplate template, ProfileRowMapper rowMapper, ProfileValidator profileValidator) {
+    public ProfileDao(NamedParameterJdbcTemplate template,
+                      ProfileRowMapper rowMapper) {
         this.template = template;
         this.rowMapper = rowMapper;
-        this.profileValidator = profileValidator;
     }
 
 
@@ -34,7 +35,7 @@ public class ProfileDao {
                 template.query(sqlLock,
                         new MapSqlParameterSource("phone", phone),
                         rowMapper);
-        return profileValidator.validatePhoneSearchResult(profile, phone);
+        return ProfileValidator.validatePhoneSearchResult(profile, phone);
     }
 
 
@@ -44,7 +45,7 @@ public class ProfileDao {
                 template.query(sqlLock,
                         new MapSqlParameterSource("phone", phone),
                         rowMapper);
-        return profileValidator.validatePhoneSearchResult(profile, phone);
+        return ProfileValidator.validatePhoneSearchResult(profile, phone);
     }
 
 
@@ -79,7 +80,7 @@ public class ProfileDao {
                 template.query(sqlLock,
                         new MapSqlParameterSource("id", id),
                         rowMapper);
-        return profileValidator.validateIdSearchResult(profile, id);
+        return ProfileValidator.validateIdSearchResult(profile, id);
     }
 
 
@@ -89,13 +90,28 @@ public class ProfileDao {
                 template.query(sqlLock,
                         new MapSqlParameterSource("id", id),
                         rowMapper);
-        return profileValidator.validateIdSearchResult(profile, id);
+        return ProfileValidator.validateIdSearchResult(profile, id);
     }
 
 
-    public ProfilesEntity getAll() {
-        String sql = "SELECT * FROM profile";
-        return new ProfilesEntity(template.query(sql, rowMapper));
+    public ProfilesEntity getAllByFilter(ProfileSearchFilter filter,
+                                         Pageable pageable) {
+        String sql = """
+        SELECT * FROM profile AS p
+        WHERE  (p.email = COALESCE(:email, p.email))
+                  AND (p.last_name = COALESCE(:lastName, p.last_name))
+                  AND (p.first_name = COALESCE(:firstName, p.first_name))
+                  AND (p.patronymic = COALESCE(:patronymic, p.patronymic))
+                LIMIT :limit OFFSET :offset
+        """;
+        var map = new MapSqlParameterSource()
+                .addValue("email", filter.email())
+                .addValue("lastName", filter.lastName())
+                .addValue("firstName", filter.firstName())
+                .addValue("patronymic", filter.patronymic())
+                .addValue("limit", pageable.getPageSize())
+                .addValue("offset", pageable.getPageSize() * (pageable.getPageNumber()  - 1));
+        return new ProfilesEntity(template.query(sql, map, rowMapper));
     }
 
 

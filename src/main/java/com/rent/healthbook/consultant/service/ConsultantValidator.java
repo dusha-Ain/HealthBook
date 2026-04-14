@@ -13,42 +13,42 @@ import java.util.UUID;
 @Component
 public class ConsultantValidator {
 
-    public ConsultantEntity validateConsultantExistsAfterCreate(
+    public static ConsultantEntity validateConsultantExistsAfterCreate(
             Optional<ConsultantEntity> consultant, UUID id) {
         return consultant.orElseThrow(() -> new EntityNotFoundInternalException(
                 String.format("Consultant not found after create by profile id = %s", id)));
     }
 
 
-    public ConsultantEntity validateConsultantCheckExists(
+    public static ConsultantEntity validateConsultantCheckExists(
             Optional<ConsultantEntity> consultant, UUID id) {
         return consultant.orElseThrow(() -> new EntityNotFoundInternalException(
                 String.format("Consultant not found by id = %s", id)));
     }
 
 
-    public void validateCreationResult(boolean createResult, UUID id) {
+    public static void validateCreationResult(boolean createResult, UUID id) {
         if (!createResult) {
             throw new ValidationException(
                     String.format("Consultant creation failed by profile id = %s", id));
         }
     }
 
-    public void validateDeleteResult(boolean deleteResult, UUID id) {
+    public static void validateDeleteResult(boolean deleteResult, UUID id) {
         if (!deleteResult) {
             throw new ValidationException(
                     String.format("Consultant delete by id = %s failed", id));
         }
     }
 
-    public void validateUpdateResult(boolean updateResult, UUID id) {
+    public static void validateUpdateResult(boolean updateResult, UUID id) {
         if (!updateResult) {
             throw new ValidationException(
                     String.format("Consultant update online status by id = %s failed", id));
         }
     }
 
-    public void validateConsultantNotExists(
+    public static void validateConsultantNotExists(
             Optional<ConsultantEntity> existingConsultant, UUID id) {
         if (existingConsultant.isPresent()) {
             throw new ValidationException(
@@ -56,7 +56,7 @@ public class ConsultantValidator {
         }
     }
 
-    public Optional<ConsultantEntity> validateProfileIdSearchResult(
+    public static Optional<ConsultantEntity> validateProfileIdSearchResult(
             List<ConsultantEntity> consultant, UUID id) {
         if (consultant.size() > 1) {
             throw new EntityToManyResultException(
@@ -68,7 +68,7 @@ public class ConsultantValidator {
         return consultant.stream().findFirst();
     }
 
-    public Optional<ConsultantEntity> validateIdSearchResult(
+    public static Optional<ConsultantEntity> validateIdSearchResult(
             List<ConsultantEntity> consultant, UUID id) {
         if (consultant.size() > 1) {
             throw new EntityToManyResultException(

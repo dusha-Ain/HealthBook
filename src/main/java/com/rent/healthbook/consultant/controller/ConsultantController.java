@@ -3,6 +3,7 @@ package com.rent.healthbook.consultant.controller;
 import com.rent.healthbook.consultant.dto.Consultant;
 import com.rent.healthbook.consultant.dto.Consultants;
 import com.rent.healthbook.consultant.service.ConsultantService;
+import com.rent.healthbook.web.Pageable;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -53,10 +54,19 @@ public class ConsultantController {
 
     @Operation(summary = "Вывести всех консультантов")
     @GetMapping("/")
-    public ResponseEntity<Consultants> getAllConsultants() {
+    public ResponseEntity<Consultants> getAllConsultantsByFilter(
+            @Parameter(description = "Количество консультантов для вывода")
+            @RequestParam(name = "pageSize", required = false) Integer pageSize,
+
+            @Parameter(description = "Номер страницы поиска")
+            @RequestParam(name = "pageNumber", required = false) Integer pageNumber
+    ) {
         logger.info("Called getAllConsultants");
+        var filter = new Pageable();
+        filter.setPageNumber(pageNumber);
+        filter.setPageSize(pageSize);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(service.getAllConsultants());
+                .body(service.getAllConsultantsByFilter(filter));
     }
 
 
