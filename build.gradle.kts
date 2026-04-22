@@ -30,6 +30,13 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-validation-test")
     testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+    // FOR INTEGRATION TESTS
+    testImplementation("org.testcontainers:testcontainers:1.19.3")
+    testImplementation("org.testcontainers:postgresql:1.19.3")
+    testImplementation("org.testcontainers:junit-jupiter:1.19.3")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+
 }
 
 tasks.withType<Test> {
