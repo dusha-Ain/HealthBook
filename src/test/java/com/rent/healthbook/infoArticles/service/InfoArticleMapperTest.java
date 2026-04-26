@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class InfoArticleMapperTest {
 
-    private InfoArticleMapper mapper = new InfoArticleMapper();
+    private final InfoArticleMapper mapper = new InfoArticleMapper();
 
     @Test
     void toEntity_FromInfoArticle_ShouldConvert() {
@@ -36,7 +36,7 @@ class InfoArticleMapperTest {
 
     @Test
     void toEntity_FromInfoArticle_ShouldThrowException_WhenNull() {
-        assertThrows(ValidationException.class, () -> mapper.toEntity((InfoArticle) null));
+        assertThrows(ValidationException.class, () -> mapper.toEntity(null));
     }
 
     @Test

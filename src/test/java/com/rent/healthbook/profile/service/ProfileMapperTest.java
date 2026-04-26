@@ -4,7 +4,6 @@ import com.rent.healthbook.profile.dto.Profile;
 import com.rent.healthbook.profile.dto.ProfileSecurity;
 import com.rent.healthbook.profile.dto.ProfileUpdate;
 import com.rent.healthbook.profile.entity.ProfileEntity;
-import com.rent.healthbook.profile.dto.enums.ProfileRole;
 import com.rent.healthbook.web.exception.ValidationException;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ProfileMapperTest {
 
-    private ProfileMapper mapper = new ProfileMapper();
+    private final ProfileMapper mapper = new ProfileMapper();
 
     @Test
     void toEntity_FromProfileSecurity_ShouldConvert() {
@@ -36,7 +35,7 @@ class ProfileMapperTest {
 
     @Test
     void toEntity_FromProfileSecurity_ShouldThrowException_WhenNull() {
-        assertThrows(ValidationException.class, () -> mapper.toEntity((ProfileSecurity) null));
+        assertThrows(ValidationException.class, () -> mapper.toEntity(null));
     }
 
     @Test

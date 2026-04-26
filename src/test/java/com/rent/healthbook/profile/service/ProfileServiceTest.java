@@ -4,7 +4,6 @@ import com.rent.healthbook.profile.dao.ProfileDao;
 import com.rent.healthbook.profile.dto.*;
 import com.rent.healthbook.profile.entity.ProfileEntity;
 import com.rent.healthbook.profile.entity.ProfilesEntity;
-import com.rent.healthbook.profile.dto.enums.ProfileRole;
 import com.rent.healthbook.web.Pageable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +17,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)

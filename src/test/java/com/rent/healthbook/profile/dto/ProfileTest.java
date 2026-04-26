@@ -7,11 +7,10 @@ import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.sql.Date;
 import java.util.Set;
-import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ProfileTest {
 
@@ -153,7 +152,7 @@ class ProfileTest {
 
     @Test
     void profile_ShouldBeValid_WhenIdIsNotNull() {
-        // Id can have value when retrieving from database
+        //ID can have value when retrieving from database
         Profile profile = new Profile(
                 //UUID.randomUUID(),
                 null,
@@ -166,10 +165,5 @@ class ProfileTest {
         );
         Set<ConstraintViolation<Profile>> violations = validator.validate(profile);
         assertTrue(violations.isEmpty(), "Id can be  null for existing profiles");
-
-        // Here was the idea of the profile which the id could be null or not
-//        violations.forEach(v ->
-//                System.out.println(v.getPropertyPath() + " -> " + v.getMessage())
-//        );
     }
 }

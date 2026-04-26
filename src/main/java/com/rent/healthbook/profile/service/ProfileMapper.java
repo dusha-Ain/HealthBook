@@ -2,6 +2,7 @@ package com.rent.healthbook.profile.service;
 
 
 import com.rent.healthbook.profile.dto.Profile;
+import com.rent.healthbook.profile.dto.ProfileKafka;
 import com.rent.healthbook.profile.dto.ProfileSecurity;
 import com.rent.healthbook.profile.dto.ProfileUpdate;
 import com.rent.healthbook.profile.entity.ProfileEntity;
@@ -54,6 +55,14 @@ public class ProfileMapper {
                 profile.getEmail(),
                 profile.getFired(),
                 profile.getRegistrationDate()
+        );
+    }
+
+    public ProfileKafka toProfileKafka(ProfileEntity profile){
+        return new ProfileKafka(
+                profile.getId().toString(),
+                profile.getFirstName(),
+                profile.getProfileRole().name()
         );
     }
 }

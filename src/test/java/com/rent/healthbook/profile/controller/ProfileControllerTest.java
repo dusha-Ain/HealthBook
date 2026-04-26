@@ -15,7 +15,8 @@ import java.sql.Date;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -46,14 +47,6 @@ class ProfileControllerTest {
         assertNotNull(response.getBody());
         assertEquals(id, response.getBody().id());
         verify(profileService, times(1)).addProfile(any(ProfileSecurity.class));
-
-        //        Well this is for changing the data and checks that the actual data is matched to the
-//        expecte data or not??  the Test is working properly.
-//        assertEquals("BelovMia", response.getBody().firstName());
-//        assertEquals("Andrey", response.getBody().lastName());
-//        assertEquals("Konstantinovich", response.getBody().patronymic());
-//        assertEquals("test@example.com", response.getBody().email());
-
     }
 
     @Test
@@ -67,16 +60,11 @@ class ProfileControllerTest {
 
         ResponseEntity<Profile> response = profileController.getProfileById(id);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.OK,
+                response.getStatusCode());
+        assert response.getBody() != null;
         assertEquals(id, response.getBody().id());
         verify(profileService, times(1)).getById(id);
-
-        //These test are strictly for the data insurance that is the data is
-        // matching with the actual of that data that we are expecting.
-//        assertNotNull(response.getBody());
-//        assertEquals("Belov", response.getBody().lastName());
-//        assertEquals("Andrey",response.getBody().firstName());
-//        assertEquals("mia.com", response.getBody().email());
     }
 
     @Test
@@ -156,8 +144,6 @@ class ProfileControllerTest {
         when(profileService.getById(nonExistentId))
                 .thenThrow(new RuntimeException("Profile not found"));
 
-        assertThrows(RuntimeException.class, () -> {
-            profileController.getProfileById(nonExistentId);
-        });
+        assertThrows(RuntimeException.class, () -> profileController.getProfileById(nonExistentId));
     }
 }

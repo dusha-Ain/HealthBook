@@ -6,6 +6,7 @@ import com.rent.healthbook.profile.dto.*;
 import com.rent.healthbook.profile.entity.ProfileEntity;
 import com.rent.healthbook.web.AppConfig;
 import com.rent.healthbook.web.Pageable;
+import com.rent.healthbook.web.kafka.ProfileEventProducer;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,11 +20,13 @@ public class ProfileService {
 
     private final ProfileDao profileDao;
     private final ProfileMapper mapper;
+    private final ProfileEventProducer eventProducer;
 
     public ProfileService(ProfileDao profileDao,
-                          ProfileMapper mapper) {
+                          ProfileMapper mapper, ProfileEventProducer eventProducer) {
         this.profileDao = profileDao;
         this.mapper = mapper;
+        this.eventProducer = eventProducer;
     }
 
     @Transactional
@@ -38,6 +41,7 @@ public class ProfileService {
         ProfileEntity savedProfile = ProfileValidator.validateProfileExistsAfterCreate(
                 profileDao.getProfileByPhone(profile.phone()),
                 profile.phone());
+        eventProducer.sendProfileCreated(mapper.toProfileKafka(savedProfile));
         return mapper.toDomainProfile(savedProfile);
     }
 
@@ -45,6 +49,15 @@ public class ProfileService {
     public Profile getById(UUID id) {
         ProfileEntity findProfile = ProfileValidator.validateProfileCheckExists(profileDao.getById(id), id);
         return mapper.toDomainProfile(findProfile);
+    }
+
+    public ProfileKafka getByIdForKafka(UUID id) {
+        var profileEntity = ProfileValidator.validateProfileCheckExists(profileDao.getById(id), id);
+        return mapper.toProfileKafka(profileEntity);
+    }
+
+    public boolean existsByIdForKafka(UUID id) {
+        return profileDao.existsById(id);
     }
 
 
@@ -61,6 +74,7 @@ public class ProfileService {
     @Transactional
     public void deleteProfile(UUID id) {
         ProfileValidator.validateProfileCheckExists(profileDao.getByIdWithLock(id), id);
+        eventProducer.sendProfileDeleted(id);
         ProfileValidator.validateDeleteResult(profileDao.delete(id), id);
     }
 
@@ -73,6 +87,7 @@ public class ProfileService {
         ProfileValidator.validateUpdateResult(profileDao.update(updateProfile), id);
         ProfileEntity savedProfile =
                 ProfileValidator.validateProfileExistsAfterUpdate(profileDao.getById(id), id);
+        eventProducer.sendProfileUpdated(mapper.toProfileKafka(savedProfile));
         return mapper.toDomainProfile(savedProfile);
     }
 
@@ -91,4 +106,5 @@ public class ProfileService {
         ProfileValidator.validateProfileCheckExists(profileDao.getByIdWithLock(id), id);
         ProfileValidator.validateBlockResult(profileDao.block(id), id);
     }
+
 }

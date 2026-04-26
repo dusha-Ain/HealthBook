@@ -63,6 +63,7 @@ class DoctorControllerTest {
         ResponseEntity<Doctor> response = doctorController.getDoctorById(id);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assert response.getBody() != null;
         assertEquals(id, response.getBody().id());
         verify(doctorService, times(1)).getDoctorById(id);
     }
@@ -119,9 +120,7 @@ class DoctorControllerTest {
         when(doctorService.getDoctorById(nonExistentId))
                 .thenThrow(new RuntimeException("Doctor not found"));
 
-        assertThrows(RuntimeException.class, () -> {
-            doctorController.getDoctorById(nonExistentId);
-        });
+        assertThrows(RuntimeException.class, () -> doctorController.getDoctorById(nonExistentId));
     }
 
     @Test
@@ -130,8 +129,6 @@ class DoctorControllerTest {
         doThrow(new RuntimeException("Database error"))
                 .when(doctorService).deleteDoctor(id);
 
-        assertThrows(RuntimeException.class, () -> {
-            doctorController.deleteDoctor(id);
-        });
+        assertThrows(RuntimeException.class, () -> doctorController.deleteDoctor(id));
     }
 }

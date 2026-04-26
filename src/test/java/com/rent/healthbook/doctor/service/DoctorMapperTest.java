@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class DoctorMapperTest {
 
-    private DoctorMapper mapper = new DoctorMapper();
+    private final DoctorMapper mapper = new DoctorMapper();
 
     @Test
     void toEntity_ShouldConvertDoctorDtoToEntity() {
@@ -33,7 +33,7 @@ class DoctorMapperTest {
 
     @Test
     void toEntity_ShouldThrowException_WhenDoctorIsNull() {
-        assertThrows(ValidationException.class, () -> mapper.toEntity((Doctor) null));
+        assertThrows(ValidationException.class, () -> mapper.toEntity(null));
     }
 
     @Test

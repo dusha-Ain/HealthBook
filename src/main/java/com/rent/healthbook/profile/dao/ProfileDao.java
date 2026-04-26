@@ -101,7 +101,8 @@ public class ProfileDao {
         WHERE  (p.email = COALESCE(:email, p.email))
                   AND (p.last_name = COALESCE(:lastName, p.last_name))
                   AND (p.first_name = COALESCE(:firstName, p.first_name))
-                  AND (p.patronymic = COALESCE(:patronymic, p.patronymic))
+                  AND (p.patronymic = COALESCE(:patronymic, p.patronymic) OR
+                        (p.patronymic IS NOT DISTINCT FROM :patronymic))
                 LIMIT :limit OFFSET :offset
         """;
         var map = new MapSqlParameterSource()
@@ -158,5 +159,18 @@ public class ProfileDao {
                 WHERE id=:id
                 """;
         return 1 == template.update(sql, new MapSqlParameterSource("id", id));
+    }
+
+    public boolean existsById(UUID id) {
+        String sql = """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM profile
+                    WHERE id=:id
+                )
+                """;
+        var map = new MapSqlParameterSource()
+                .addValue("id", id);
+        return Boolean.TRUE.equals(template.queryForObject(sql, map, Boolean.class));
     }
 }
