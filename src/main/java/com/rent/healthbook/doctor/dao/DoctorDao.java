@@ -3,6 +3,7 @@ package com.rent.healthbook.doctor.dao;
 import com.rent.healthbook.doctor.entity.DoctorEntity;
 import com.rent.healthbook.doctor.entity.DoctorsEntity;
 import com.rent.healthbook.doctor.service.DoctorValidator;
+import com.rent.healthbook.profile.dto.enums.ProfileRole;
 import com.rent.healthbook.web.Pageable;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -66,6 +67,11 @@ public class DoctorDao {
                 work_start, work_end, duration_reception, id_profile)
                 VALUES(:id, :spec, :cabinet, :start, :end, :duration, :idProfile)
                 """;
+        String sqlProfile = """
+                UPDATE profile
+                SET role = :role
+                WHERE id = :idProfile
+                """;
         var map = new MapSqlParameterSource()
                 .addValue("id", UUID.randomUUID())
                 .addValue("spec", doctor.getSpecialization())
@@ -73,7 +79,9 @@ public class DoctorDao {
                 .addValue("start", doctor.getWorkStart())
                 .addValue("end", doctor.getWorkEnd())
                 .addValue("duration", doctor.getDurationReception())
-                .addValue("idProfile", doctor.getIdProfile());
+                .addValue("idProfile", doctor.getIdProfile())
+                .addValue("role", ProfileRole.DOCTOR.name());
+        template.update(sqlProfile, map);
         return  1 == template.update(sql, map);
     }
 

@@ -3,6 +3,7 @@ package com.rent.healthbook.web.kafka;
 
 import com.rent.healthbook.profile.dto.ProfileKafka;
 import com.rent.healthbook.web.kafka.dto.ProfileEvent;
+import com.rent.healthbook.web.kafka.dto.enums.ProfileEventType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ public class ProfileEventProducer {
 
     public void sendProfileCreated(ProfileKafka profile) {
         ProfileEvent event = new ProfileEvent(
-                "PROFILE_CREATED",
+                ProfileEventType.PROFILE_CREATED.name(),
                 UUID.fromString(profile.getId()),
                 profile.getName(),
                 profile.getRole(),
@@ -37,7 +38,7 @@ public class ProfileEventProducer {
 
     public void sendProfileUpdated(ProfileKafka profile) {
         ProfileEvent event = new ProfileEvent(
-                "PROFILE_UPDATED",
+                ProfileEventType.PROFILE_UPDATED.name(),
                 UUID.fromString(profile.getId()),
                 profile.getName(),
                 profile.getRole(),
@@ -49,7 +50,7 @@ public class ProfileEventProducer {
 
     public void sendProfileDeleted(UUID idProfile) {
         ProfileEvent event = new ProfileEvent(
-                "PROFILE_DELETED",
+                ProfileEventType.PROFILE_DELETED.name(),
                 idProfile,
                 null,
                 null,

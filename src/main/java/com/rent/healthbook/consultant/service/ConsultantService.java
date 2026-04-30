@@ -28,7 +28,8 @@ public class ConsultantService {
 
     @Transactional
     public Consultant addConsultant(@Valid Consultant consultant) {
-        var maybeConsultant = consultantDao.getConsultantByProfileIdWithLock(consultant.idProfile());
+        var maybeConsultant = consultantDao
+                .getConsultantByProfileIdWithLock(consultant.idProfile());
         ConsultantValidator.validateConsultantNotExists(maybeConsultant, consultant.idProfile());
         var consultantEntity = mapper.toEntity(consultant);
         ConsultantValidator.validateCreationResult(

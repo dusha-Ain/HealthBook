@@ -3,6 +3,7 @@ package com.rent.healthbook.web.kafka;
 import com.rent.healthbook.profile.service.ProfileService;
 import com.rent.healthbook.web.kafka.dto.UserValidationRequest;
 import com.rent.healthbook.web.kafka.dto.UserValidationResponse;
+import com.rent.healthbook.web.kafka.dto.enums.ProfileAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,8 +44,9 @@ public class UserValidationConsumer {
             UserValidationResponse response = new UserValidationResponse();
             response.setIdRequest(request.getIdRequest());
 
-            switch (request.getAction()) {
-                case "GET_PROFILE":
+            var action = ProfileAction.valueOf(request.getAction());
+            switch (action) {
+                case ProfileAction.GET_PROFILE:
                     var profile = profileService.getByIdForKafka(request.getIdUser());
                     if (profile != null) {
                         response.setExists(true);
@@ -56,7 +58,7 @@ public class UserValidationConsumer {
                     }
                     break;
 
-                case "CHECK_EXISTS":
+                case ProfileAction.CHECK_EXISTS:
                     boolean exists = profileService.existsByIdForKafka(request.getIdUser());
                     response.setExists(exists);
                     log.info("🔍 Пользователь {} существует: {}", request.getIdUser(), exists);

@@ -68,7 +68,7 @@ public class ProfileDao {
                 .addValue("password", profile.getPassword())
                 .addValue("phone", profile.getPhone())
                 .addValue("registrationDate", LocalDate.now())
-                .addValue("isFired", Boolean.TRUE)
+                .addValue("isFired", Boolean.FALSE)
                 .addValue("role", ProfileRole.USER.name());
 
         return template.update(sql, map) == 1;
