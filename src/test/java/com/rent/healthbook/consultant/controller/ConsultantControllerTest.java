@@ -1,6 +1,5 @@
 package com.rent.healthbook.consultant.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rent.healthbook.consultant.dto.Consultant;
 import com.rent.healthbook.consultant.service.ConsultantService;
 import org.junit.jupiter.api.Test;
@@ -55,6 +54,7 @@ class ConsultantControllerTest {
         ResponseEntity<Consultant> response = consultantController.getConsultantById(id);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assert response.getBody() != null;
         assertEquals(id, response.getBody().id());
         verify(consultantService, times(1)).getById(id);
     }
@@ -88,9 +88,7 @@ class ConsultantControllerTest {
         when(consultantService.getById(nonExistentId))
                 .thenThrow(new RuntimeException("Consultant not found"));
 
-        assertThrows(RuntimeException.class, () -> {
-            consultantController.getConsultantById(nonExistentId);
-        });
+        assertThrows(RuntimeException.class, () -> consultantController.getConsultantById(nonExistentId));
     }
 
     @Test
@@ -99,9 +97,7 @@ class ConsultantControllerTest {
         doThrow(new RuntimeException("Database error"))
                 .when(consultantService).deleteConsultant(id);
 
-        assertThrows(RuntimeException.class, () -> {
-            consultantController.deleteConsultant(id);
-        });
+        assertThrows(RuntimeException.class, () -> consultantController.deleteConsultant(id));
     }
 
     @Test
@@ -113,9 +109,7 @@ class ConsultantControllerTest {
         when(consultantService.addConsultant(any(Consultant.class)))
                 .thenThrow(new IllegalArgumentException("Invalid consultant data"));
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            consultantController.addConsultant(invalidConsultant);
-        });
+        assertThrows(IllegalArgumentException.class, () -> consultantController.addConsultant(invalidConsultant));
     }
 
 }

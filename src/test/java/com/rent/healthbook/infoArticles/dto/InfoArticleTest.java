@@ -4,16 +4,14 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.data.relational.core.sql.IsNull;
 
-import java.sql.Date;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class InfoArticleTest {
 
@@ -58,11 +56,6 @@ class InfoArticleTest {
         boolean hasTitleViolation = violations.stream()
                 .anyMatch(v -> v.getPropertyPath().toString().equals("title"));
         assertTrue(hasTitleViolation, "Should have validation error for blank title");
-
-        //Only for matching the articles
-//        assertEquals("jsdfgs", article.content());
-//        assertEquals(null, article.id());
-//        assertEquals("", article.title());
     }
 
     @Test

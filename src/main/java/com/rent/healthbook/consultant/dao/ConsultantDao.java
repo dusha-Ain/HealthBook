@@ -3,6 +3,7 @@ package com.rent.healthbook.consultant.dao;
 import com.rent.healthbook.consultant.entity.ConsultantEntity;
 import com.rent.healthbook.consultant.entity.ConsultantsEntity;
 import com.rent.healthbook.consultant.service.ConsultantValidator;
+import com.rent.healthbook.profile.dto.enums.ProfileRole;
 import com.rent.healthbook.web.Pageable;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -62,19 +63,26 @@ public class ConsultantDao {
     }
 
 
-    public Boolean createConsultant(ConsultantEntity consultant){
+    public Boolean createConsultant(ConsultantEntity consultant) {
         String sql = """
                 INSERT INTO consultant_profile(id, is_online, id_profile)
                 VALUES(:id, :isOnline, :idProfile)
                 """;
+        String sqlProfile = """
+                UPDATE profile
+                SET role = :role
+                WHERE id = :idProfile
+                """;
         var map = new MapSqlParameterSource()
                 .addValue("id", UUID.randomUUID())
                 .addValue("isOnline", Boolean.TRUE)
-                .addValue("idProfile", consultant.getIdProfile());
+                .addValue("idProfile", consultant.getIdProfile())
+                .addValue("role", ProfileRole.CONSULTANT.name());
+        template.update(sqlProfile, map);
         return 1 == template.update(sql, map);
     }
 
-    public Boolean updateOnlineStatus(Boolean bool, UUID id){
+    public Boolean updateOnlineStatus(Boolean bool, UUID id) {
         String sql = "UPDATE consultant_profile SET is_online=:bool WHERE id=:id";
         var map = new MapSqlParameterSource()
                 .addValue("bool", bool)

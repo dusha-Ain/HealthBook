@@ -61,6 +61,7 @@ class InfoArticlesControllerTest {
         ResponseEntity<InfoArticle> response = infoArticlesController.getArticleById(id);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assert response.getBody() != null;
         assertEquals(id, response.getBody().id());
         verify(infoArticlesService, times(1)).getArticleById(id);
     }
@@ -130,9 +131,7 @@ class InfoArticlesControllerTest {
         when(infoArticlesService.getArticleById(nonExistentId))
                 .thenThrow(new RuntimeException("Article not found"));
 
-        assertThrows(RuntimeException.class, () -> {
-            infoArticlesController.getArticleById(nonExistentId);
-        });
+        assertThrows(RuntimeException.class, () -> infoArticlesController.getArticleById(nonExistentId));
     }
 
     @Test
@@ -141,8 +140,6 @@ class InfoArticlesControllerTest {
         doThrow(new RuntimeException("Database error"))
                 .when(infoArticlesService).deleteArticle(id);
 
-        assertThrows(RuntimeException.class, () -> {
-            infoArticlesController.deleteArticle(id);
-        });
+        assertThrows(RuntimeException.class, () -> infoArticlesController.deleteArticle(id));
     }
 }
