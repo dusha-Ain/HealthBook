@@ -1,4 +1,6 @@
 package com.rent.healthbook.profile.service;
+import com.rent.healthbook.profile.dto.ProfileKafka;
+import com.rent.healthbook.web.kafka.ProfileEventProducer;
 
 import com.rent.healthbook.profile.dao.ProfileDao;
 import com.rent.healthbook.profile.dto.*;
@@ -19,7 +21,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-
+import org.mockito.ArgumentCaptor;
 @ExtendWith(MockitoExtension.class)
 class ProfileServiceTest {
 
@@ -31,6 +33,8 @@ class ProfileServiceTest {
 
     @InjectMocks
     private ProfileService profileService;
+    @Mock
+    private ProfileEventProducer eventProducer;
 
     @Test
     void addProfile_ShouldCreateAndReturnProfile() {
@@ -48,7 +52,9 @@ class ProfileServiceTest {
         savedEntity.setFirstName("Andrey");
         savedEntity.setEmail("test@example.com");
         savedEntity.setPhone(phone);
+        savedEntity.setPassword("password123"); // assuming setter exists
 
+        ProfileKafka kafkaProfile = new ProfileKafka(generatedId.toString(), "Belov Andrey", "USER"); // adjust as needed
         Profile expectedOutput = new Profile(
                 generatedId, "Belov", "Andrey", "Konstantinovich",
                 "test@example.com", false, new Date(System.currentTimeMillis()));
@@ -57,6 +63,7 @@ class ProfileServiceTest {
         when(profileMapper.toEntity(inputProfile)).thenReturn(entityToSave);
         when(profileDao.createProfile(entityToSave)).thenReturn(true);
         when(profileDao.getProfileByPhone(phone)).thenReturn(Optional.of(savedEntity));
+        when(profileMapper.toProfileKafka(savedEntity)).thenReturn(kafkaProfile);
         when(profileMapper.toDomainProfile(savedEntity)).thenReturn(expectedOutput);
 
         Profile result = profileService.addProfile(inputProfile);
@@ -64,7 +71,9 @@ class ProfileServiceTest {
         assertNotNull(result);
         assertEquals(generatedId, result.id());
         verify(profileDao, times(1)).createProfile(entityToSave);
+        verify(eventProducer, times(1)).sendProfileCreated(kafkaProfile);
     }
+
 
     @Test
     void addProfile_ShouldThrowException_WhenProfileAlreadyExists() {
