@@ -46,14 +46,21 @@ public class ProfileService {
 
     public JwtAuthentication signIn(ProfileCredential profileCredential){
         ProfileEntity profile = findByCredentials(profileCredential);
-        return jwtService.generateAuthToken(profile.getEmail(), profile.getProfileRole().name());
+        return jwtService.generateAuthToken(
+                profile.getEmail(),
+                profile.getProfileRole().name(),
+                profile.getId());
     }
 
     public JwtAuthentication refreshToken(RefreshToken refreshTokenDto){
         String refreshToken = refreshTokenDto.getRefreshToken();
         if (refreshToken != null && jwtService.validateToken(refreshToken)){
             ProfileEntity profile = getByEmail(jwtService.getEmailFromToken(refreshToken));
-            return jwtService.refreshBaseToken(profile.getEmail(), profile.getProfileRole().name(), refreshToken);
+            return jwtService.refreshBaseToken(
+                    profile.getEmail(),
+                    profile.getProfileRole().name(),
+                    profile.getId(),
+                    refreshToken);
         }
         throw new RuntimeException("Invalid refresh token");
     }

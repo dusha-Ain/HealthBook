@@ -14,6 +14,7 @@ import javax.crypto.SecretKey;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.UUID;
 
 @Component
 public class JwtService {
@@ -23,16 +24,16 @@ public class JwtService {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtService.class);
 
-    public JwtAuthentication generateAuthToken(String email, String role) {
+    public JwtAuthentication generateAuthToken(String email, String role, UUID id) {
         var jwt = new JwtAuthentication();
-        jwt.setToken(generateJwtToken(email, role));
-        jwt.setRefreshToken(generateRefreshToken(email));
+        jwt.setToken(generateJwtToken(email, role, id));
+        jwt.setRefreshToken(generateRefreshToken(email, role, id));
         return jwt;
     }
 
-    public JwtAuthentication refreshBaseToken(String email, String role, String refreshToken) {
+    public JwtAuthentication refreshBaseToken(String email, String role, UUID id, String refreshToken) {
         var jwt = new JwtAuthentication();
-        jwt.setToken(generateJwtToken(email, role));
+        jwt.setToken(generateJwtToken(email, role, id));
         jwt.setRefreshToken(refreshToken);
         return jwt;
     }
@@ -60,6 +61,15 @@ public class JwtService {
         return claims.getSubject();
     }
 
+    public String getIdFromToken(String token) {
+        Claims claims = Jwts.parser()
+                .verifyWith(getSecretKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+        return claims.get("id", String.class);
+    }
+
     public String getRoleFromToken(String token) {
         Claims claims = Jwts.parser()
                 .verifyWith(getSecretKey())
@@ -70,20 +80,23 @@ public class JwtService {
     }
 
 
-    public String generateJwtToken(String email, String role) {
+    public String generateJwtToken(String email, String role, UUID id) {
         Date date = Date.from(LocalDateTime.now().plusHours(1).atZone(ZoneId.systemDefault()).toInstant());
         return Jwts.builder()
                 .subject(email)
+                .claim("id", id.toString())
                 .claim("role", role)
                 .expiration(date)
                 .signWith(getSecretKey())
                 .compact();
     }
 
-    public String generateRefreshToken(String email) {
+    public String generateRefreshToken(String email, String role, UUID id) {
         Date date = Date.from(LocalDateTime.now().plusDays(1).atZone(ZoneId.systemDefault()).toInstant());
         return Jwts.builder()
                 .subject(email)
+                .claim("id", id.toString())
+                .claim("role", role)
                 .expiration(date)
                 .signWith(getSecretKey())
                 .compact();
