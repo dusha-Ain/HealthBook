@@ -3,7 +3,7 @@ package com.rent.healthbook.consultant.controller;
 import com.rent.healthbook.consultant.dto.Consultant;
 import com.rent.healthbook.consultant.dto.Consultants;
 import com.rent.healthbook.consultant.service.ConsultantService;
-import com.rent.healthbook.web.Pageable;
+import com.rent.healthbook.web.helpers.Pageable;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -30,6 +31,7 @@ public class ConsultantController {
 
     @Operation(summary = "Создать нового консультанта")
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Consultant> addConsultant(
             @Parameter(description = "Данные консультанта")
             @Valid @RequestBody
@@ -72,6 +74,7 @@ public class ConsultantController {
 
     @Operation(summary = "Изменить статус онлайна")
     @PutMapping("update/web/{id}")
+    @PreAuthorize("hasRole('CONSULTANT')")
     public ResponseEntity<Void> updateConsultantOnline(
             @Parameter(description = "Идентифкатор консультанта")
             @PathVariable UUID id,
@@ -85,6 +88,7 @@ public class ConsultantController {
 
     @Operation(summary = "Удалить консультанта")
     @DeleteMapping("delete/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteConsultant(
             @Parameter(description = "Идентифкатор консультанта")
             @PathVariable UUID id) {

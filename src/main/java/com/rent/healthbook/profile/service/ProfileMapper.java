@@ -8,6 +8,8 @@ import com.rent.healthbook.profile.dto.ProfileUpdate;
 import com.rent.healthbook.profile.entity.ProfileEntity;
 import com.rent.healthbook.web.exception.ValidationException;
 import org.apache.logging.log4j.util.InternalException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -15,7 +17,9 @@ import java.util.Optional;
 @Component
 public class ProfileMapper {
 
+
     public ProfileEntity toEntity(ProfileSecurity profile) {
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         if (profile == null) {
             throw new ValidationException("Profile should be not null");
         }
@@ -24,7 +28,7 @@ public class ProfileMapper {
         profileEntity.setFirstName(profile.firstName());
         profileEntity.setPatronymic(profile.patronymic());
         profileEntity.setEmail(profile.email());
-        profileEntity.setPassword(profile.password());
+        profileEntity.setPassword(passwordEncoder.encode(profile.password()));
         profileEntity.setPhone(profile.phone());
         return profileEntity;
     }

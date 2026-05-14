@@ -5,7 +5,7 @@ import com.rent.healthbook.infoArticles.dto.InfoArticle;
 import com.rent.healthbook.infoArticles.dto.InfoArticles;
 import com.rent.healthbook.infoArticles.entity.InfoArticleEntity;
 import com.rent.healthbook.infoArticles.entity.InfoArticlesEntity;
-import com.rent.healthbook.web.Pageable;
+import com.rent.healthbook.web.helpers.Pageable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

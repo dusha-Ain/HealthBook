@@ -5,10 +5,13 @@ import com.rent.healthbook.doctor.dto.Doctor;
 import com.rent.healthbook.doctor.dto.DoctorUpdate;
 import com.rent.healthbook.doctor.dto.Doctors;
 import com.rent.healthbook.doctor.entity.DoctorEntity;
-import com.rent.healthbook.web.AppConfig;
-import com.rent.healthbook.web.Pageable;
+import com.rent.healthbook.profile.dto.enums.ProfileRole;
+import com.rent.healthbook.web.helpers.AppConfig;
+import com.rent.healthbook.web.helpers.Pageable;
+import com.rent.healthbook.web.security.SecurityUtils;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -25,6 +28,7 @@ public class DoctorService {
         this.doctorDao = doctorDao;
     }
 
+    @Transactional
     public Doctor addDoctor(@Valid Doctor doctor) {
         var maybeDoctor = doctorDao.getDoctorByProfileIdWithLock(doctor.idProfile());
         DoctorValidator.validateDoctorNotExists(maybeDoctor, doctor.idProfile());
@@ -54,9 +58,11 @@ public class DoctorService {
                 .map(mapper::toDomainDoctor).toList());
     }
 
+    @Transactional
     public Doctor updateDoctor(UUID id, @Valid DoctorUpdate doctor) {
         DoctorEntity findDoctor =
                 DoctorValidator.validateDoctorCheckExists(doctorDao.getDoctorByIdWithLock(id), id);
+        SecurityUtils.checkAccessDenied(ProfileRole.DOCTOR.name(), findDoctor.getIdProfile());
         DoctorValidator.validateStartEndDate(doctor.workStart(), doctor.workEnd());
         var updateDoctor = mapper.toEntity(findDoctor, doctor);
         DoctorValidator.validateUpdateResult(doctorDao.updateDoctor(updateDoctor), id);
@@ -65,6 +71,7 @@ public class DoctorService {
         return mapper.toDomainDoctor(savedDoctor);
     }
 
+    @Transactional
     public void deleteDoctor(UUID id) {
         DoctorValidator.validateDoctorCheckExists(doctorDao.getDoctorByIdWithLock(id), id);
         DoctorValidator.validateDeleteResult(doctorDao.deleteDoctor(id), id);

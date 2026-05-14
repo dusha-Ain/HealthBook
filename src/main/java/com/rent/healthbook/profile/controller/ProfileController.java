@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -30,7 +31,7 @@ public class ProfileController {
 
 
     @Operation(summary = "Создать новый профиль")
-    @PostMapping
+    @PostMapping("/register")
     public ResponseEntity<Profile> addProfile(
             @Parameter(description = "Данные профиля")
             @Valid @RequestBody
@@ -55,6 +56,7 @@ public class ProfileController {
 
     @Operation(summary = "Вывести все профили")
     @GetMapping("/")
+    @PreAuthorize("hasAnyRole('DOCTOR', 'CONSULTANT', 'ADMIN')")
     public ResponseEntity<Profiles> getAllProfilesByFilter(
             @Parameter(description = "Почта профиля")
             @RequestParam(name = "email", required = false) String email,
@@ -84,6 +86,7 @@ public class ProfileController {
 
 
     @Operation(summary = "Редактировать профиль")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @PutMapping("/update/{id}")
     public ResponseEntity<Profile> updateProfile(
             @Parameter(description = "Идентифкатор профиля")
@@ -98,6 +101,7 @@ public class ProfileController {
 
     @Operation(summary = "Изменить пароль профиля")
     @PutMapping("update/{id}/password")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Void> updateProfilePassword(
             @Parameter(description = "Идентифкатор профиля")
             @PathVariable UUID id,
@@ -111,6 +115,7 @@ public class ProfileController {
 
     @Operation(summary = "Удалить профиль")
     @DeleteMapping("delete/{id}")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public ResponseEntity<Void> deleteProfile(
             @Parameter(description = "Идентифкатор профиля")
             @PathVariable UUID id) {
@@ -121,6 +126,7 @@ public class ProfileController {
 
     @Operation(summary = "Заблокировать профиль")
     @PutMapping("block/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> blockProfile(
             @Parameter(description = "Идентифкатор профиля")
             @PathVariable UUID id) {

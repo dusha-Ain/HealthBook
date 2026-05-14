@@ -3,7 +3,7 @@ package com.rent.healthbook.infoArticles.controller;
 import com.rent.healthbook.infoArticles.dto.InfoArticle;
 import com.rent.healthbook.infoArticles.dto.InfoArticles;
 import com.rent.healthbook.infoArticles.service.InfoArticlesService;
-import com.rent.healthbook.web.Pageable;
+import com.rent.healthbook.web.helpers.Pageable;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -30,6 +31,7 @@ public class InfoArticlesController {
 
     @Operation(summary = "Создать новую статью")
     @PostMapping
+    @PreAuthorize("hasAnyRole('DOCTOR', 'CONSULTANT', 'ADMIN')")
     public ResponseEntity<InfoArticle> addArticle(
             @Parameter(description = "Информация о статье")
             @Valid @RequestBody
@@ -70,6 +72,7 @@ public class InfoArticlesController {
 
     @Operation(summary = "Редактировать информацию о статье")
     @PutMapping("/update/{id}")
+    @PreAuthorize("hasAnyRole('DOCTOR', 'CONSULTANT', 'ADMIN')")
     public ResponseEntity<InfoArticle> updateArticle(
             @Parameter(description = "Идентифкатор статьи")
             @PathVariable UUID id,
@@ -82,6 +85,7 @@ public class InfoArticlesController {
 
     @Operation(summary = "Обновить статус публикации")
     @PutMapping("/update/publish/{id}")
+    @PreAuthorize("hasAnyRole('DOCTOR', 'CONSULTANT', 'ADMIN')")
     public ResponseEntity<Void> updateStatusArticle(
             @Parameter(description = "Идентифкатор статьи")
             @PathVariable UUID id,
@@ -95,6 +99,7 @@ public class InfoArticlesController {
 
     @Operation(summary = "Удалить статью")
     @DeleteMapping("delete/{id}")
+    @PreAuthorize("hasAnyRole('DOCTOR', 'CONSULTANT', 'ADMIN')")
     public ResponseEntity<Void> deleteArticle(
             @Parameter(description = "Идентифкатор доктора")
             @PathVariable UUID id) {

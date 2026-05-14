@@ -4,7 +4,7 @@ import com.rent.healthbook.doctor.dto.Doctor;
 import com.rent.healthbook.doctor.dto.DoctorUpdate;
 import com.rent.healthbook.doctor.dto.Doctors;
 import com.rent.healthbook.doctor.service.DoctorService;
-import com.rent.healthbook.web.Pageable;
+import com.rent.healthbook.web.helpers.Pageable;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -31,7 +32,8 @@ public class DoctorController {
 
     @Operation(summary = "Создать нового доктора")
     @PostMapping
-    public ResponseEntity<Doctor> addConsultant(
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Doctor> addDoctor(
             @Parameter(description = "Данные доктора")
             @Valid @RequestBody
             Doctor doctor) {
@@ -72,6 +74,7 @@ public class DoctorController {
 
     @Operation(summary = "Редактировать данные доктора")
     @PutMapping("/update/{id}")
+    @PreAuthorize("hasAnyRole('DOCTOR', 'ADMIN')")
     public ResponseEntity<Doctor> updateDoctor(
             @Parameter(description = "Идентифкатор доктора")
             @PathVariable UUID id,
@@ -85,6 +88,7 @@ public class DoctorController {
 
     @Operation(summary = "Удалить доктора")
     @DeleteMapping("delete/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteDoctor(
             @Parameter(description = "Идентифкатор доктора")
             @PathVariable UUID id) {

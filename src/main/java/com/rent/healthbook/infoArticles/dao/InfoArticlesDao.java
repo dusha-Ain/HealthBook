@@ -3,7 +3,7 @@ package com.rent.healthbook.infoArticles.dao;
 import com.rent.healthbook.infoArticles.entity.InfoArticleEntity;
 import com.rent.healthbook.infoArticles.entity.InfoArticlesEntity;
 import com.rent.healthbook.infoArticles.service.InfoArticlesValidator;
-import com.rent.healthbook.web.Pageable;
+import com.rent.healthbook.web.helpers.Pageable;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;

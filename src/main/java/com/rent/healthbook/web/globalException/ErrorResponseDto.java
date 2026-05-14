@@ -1,4 +1,4 @@
-package com.rent.healthbook.web;
+package com.rent.healthbook.web.globalException;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 

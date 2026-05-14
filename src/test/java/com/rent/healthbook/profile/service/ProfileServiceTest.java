@@ -6,7 +6,7 @@ import com.rent.healthbook.profile.dao.ProfileDao;
 import com.rent.healthbook.profile.dto.*;
 import com.rent.healthbook.profile.entity.ProfileEntity;
 import com.rent.healthbook.profile.entity.ProfilesEntity;
-import com.rent.healthbook.web.Pageable;
+import com.rent.healthbook.web.helpers.Pageable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,7 +21,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import org.mockito.ArgumentCaptor;
+
 @ExtendWith(MockitoExtension.class)
 class ProfileServiceTest {
 

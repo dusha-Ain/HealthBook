@@ -6,7 +6,7 @@ import com.rent.healthbook.doctor.dto.DoctorUpdate;
 import com.rent.healthbook.doctor.dto.Doctors;
 import com.rent.healthbook.doctor.entity.DoctorEntity;
 import com.rent.healthbook.doctor.entity.DoctorsEntity;
-import com.rent.healthbook.web.Pageable;
+import com.rent.healthbook.web.helpers.Pageable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

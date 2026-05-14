@@ -11,7 +11,20 @@ import java.util.UUID;
 @Component
 public class ProfileValidator {
 
-    public static Optional<ProfileEntity> validatePhoneSearchResult(List<ProfileEntity> profiles, String phone) {
+    public static Optional<ProfileEntity> validateEmailSearchResult(
+            List<ProfileEntity> profiles, String email) {
+        if (profiles.size() > 1) {
+            throw new EntityToManyResultException(
+                    String.format("More than one profile found by email = %s", email));
+        }
+        if (profiles.isEmpty()) {
+            return Optional.empty();
+        }
+        return profiles.stream().findFirst();
+    }
+
+    public static Optional<ProfileEntity> validatePhoneSearchResult(
+            List<ProfileEntity> profiles, String phone) {
         if (profiles.size() > 1) {
             throw new EntityToManyResultException(
                     String.format("More than one profile found by phone = %s", phone));

@@ -1,4 +1,4 @@
-package com.rent.healthbook.web;
+package com.rent.healthbook.web.helpers;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class AppConfig {
-
 
     private static int defaultPageSize;
     private static int defaultPageNumber;

@@ -4,7 +4,8 @@ logging:
   level:
     org.springframework.jdbc.core: DEBUG
     org.springframework.jdbc.core.StatementCreatorUtils: TRACE
-    com.rent.hata: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
 
 spring:
   application:

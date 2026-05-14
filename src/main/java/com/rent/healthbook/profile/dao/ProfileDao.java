@@ -1,12 +1,12 @@
 package com.rent.healthbook.profile.dao;
 
 
-import com.rent.healthbook.web.Pageable;
 import com.rent.healthbook.profile.dto.enums.ProfileRole;
 import com.rent.healthbook.profile.entity.ProfileEntity;
 import com.rent.healthbook.profile.entity.ProfilesEntity;
 import com.rent.healthbook.profile.service.ProfileSearchFilter;
 import com.rent.healthbook.profile.service.ProfileValidator;
+import com.rent.healthbook.web.helpers.Pageable;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -46,6 +46,15 @@ public class ProfileDao {
                         new MapSqlParameterSource("phone", phone),
                         rowMapper);
         return ProfileValidator.validatePhoneSearchResult(profile, phone);
+    }
+
+    public Optional<ProfileEntity> getProfileByEmail(String email) {
+        String sqlLock = "SELECT * FROM profile WHERE email = :email";
+        List<ProfileEntity> profile =
+                template.query(sqlLock,
+                        new MapSqlParameterSource("email", email),
+                        rowMapper);
+        return ProfileValidator.validateEmailSearchResult(profile, email);
     }
 
 

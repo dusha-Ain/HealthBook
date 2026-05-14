@@ -1,4 +1,4 @@
-package com.rent.healthbook.web;
+package com.rent.healthbook.web.helpers;
 
 public class Pageable {
     private Integer pageSize;

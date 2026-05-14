@@ -3,6 +3,7 @@ package com.rent.healthbook.infoArticles.controller;
 import com.rent.healthbook.infoArticles.dto.InfoArticle;
 import com.rent.healthbook.infoArticles.dto.InfoArticles;
 import com.rent.healthbook.infoArticles.service.InfoArticlesService;
+import com.rent.healthbook.web.helpers.Pageable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -70,14 +71,14 @@ class InfoArticlesControllerTest {
     void getAllArticlesByFilter_ShouldReturnArticles() {
         InfoArticles mockArticles = new InfoArticles(java.util.Collections.emptyList());
 
-        when(infoArticlesService.getAllDoctorsByFilter(any(com.rent.healthbook.web.Pageable.class)))
+        when(infoArticlesService.getAllDoctorsByFilter(any(Pageable.class)))
                 .thenReturn(mockArticles);
 
         ResponseEntity<InfoArticles> response = infoArticlesController.getAllArticlesByFilter(10, 0);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        verify(infoArticlesService, times(1)).getAllDoctorsByFilter(any(com.rent.healthbook.web.Pageable.class));
+        verify(infoArticlesService, times(1)).getAllDoctorsByFilter(any(Pageable.class));
     }
 
     @Test

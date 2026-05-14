@@ -4,7 +4,7 @@ import com.rent.healthbook.doctor.entity.DoctorEntity;
 import com.rent.healthbook.doctor.entity.DoctorsEntity;
 import com.rent.healthbook.doctor.service.DoctorValidator;
 import com.rent.healthbook.profile.dto.enums.ProfileRole;
-import com.rent.healthbook.web.Pageable;
+import com.rent.healthbook.web.helpers.Pageable;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;

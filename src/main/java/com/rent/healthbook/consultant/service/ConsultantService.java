@@ -4,8 +4,10 @@ import com.rent.healthbook.consultant.dao.ConsultantDao;
 import com.rent.healthbook.consultant.dto.Consultant;
 import com.rent.healthbook.consultant.dto.Consultants;
 import com.rent.healthbook.consultant.entity.ConsultantEntity;
-import com.rent.healthbook.web.AppConfig;
-import com.rent.healthbook.web.Pageable;
+import com.rent.healthbook.profile.dto.enums.ProfileRole;
+import com.rent.healthbook.web.helpers.AppConfig;
+import com.rent.healthbook.web.helpers.Pageable;
+import com.rent.healthbook.web.security.SecurityUtils;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,7 +60,9 @@ public class ConsultantService {
 
     @Transactional
     public void updateConsultantOnline(UUID id, Boolean online) {
-        ConsultantValidator.validateConsultantCheckExists(consultantDao.getConsultantByIdWithLock(id), id);
+        var consul =
+                ConsultantValidator.validateConsultantCheckExists(consultantDao.getConsultantByIdWithLock(id), id);
+        SecurityUtils.checkAccessDenied(ProfileRole.CONSULTANT.name(), consul.getIdProfile());
         ConsultantValidator.validateUpdateResult(consultantDao.updateOnlineStatus(online, id), id);
     }
 

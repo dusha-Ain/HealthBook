@@ -3,11 +3,19 @@ package com.rent.healthbook.profile.service;
 
 import com.rent.healthbook.profile.dao.ProfileDao;
 import com.rent.healthbook.profile.dto.*;
+import com.rent.healthbook.profile.dto.enums.ProfileRole;
 import com.rent.healthbook.profile.entity.ProfileEntity;
-import com.rent.healthbook.web.AppConfig;
-import com.rent.healthbook.web.Pageable;
+import com.rent.healthbook.web.helpers.AppConfig;
+import com.rent.healthbook.web.helpers.Pageable;
+import com.rent.healthbook.web.exception.EntityNotFoundException;
 import com.rent.healthbook.web.kafka.ProfileEventProducer;
+import com.rent.healthbook.web.security.SecurityUtils;
+import com.rent.healthbook.web.security.dto.JwtAuthentication;
+import com.rent.healthbook.web.security.dto.ProfileCredential;
+import com.rent.healthbook.web.security.dto.RefreshToken;
+import com.rent.healthbook.web.security.jwt.JwtService;
 import jakarta.validation.Valid;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,12 +29,33 @@ public class ProfileService {
     private final ProfileDao profileDao;
     private final ProfileMapper mapper;
     private final ProfileEventProducer eventProducer;
+    private final JwtService jwtService;
+    private final PasswordEncoder passwordEncoder;
 
     public ProfileService(ProfileDao profileDao,
-                          ProfileMapper mapper, ProfileEventProducer eventProducer) {
+                          ProfileMapper mapper,
+                          ProfileEventProducer eventProducer,
+                          JwtService jwtService,
+                          PasswordEncoder passwordEncoder) {
         this.profileDao = profileDao;
         this.mapper = mapper;
         this.eventProducer = eventProducer;
+        this.jwtService = jwtService;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    public JwtAuthentication signIn(ProfileCredential profileCredential){
+        ProfileEntity profile = findByCredentials(profileCredential);
+        return jwtService.generateAuthToken(profile.getEmail(), profile.getProfileRole().name());
+    }
+
+    public JwtAuthentication refreshToken(RefreshToken refreshTokenDto){
+        String refreshToken = refreshTokenDto.getRefreshToken();
+        if (refreshToken != null && jwtService.validateToken(refreshToken)){
+            ProfileEntity profile = getByEmail(jwtService.getEmailFromToken(refreshToken));
+            return jwtService.refreshBaseToken(profile.getEmail(), profile.getProfileRole().name(), refreshToken);
+        }
+        throw new RuntimeException("Invalid refresh token");
     }
 
     @Transactional
@@ -83,6 +112,7 @@ public class ProfileService {
     public Profile updateProfile(UUID id, ProfileUpdate profile) {
         ProfileEntity findProfile =
                 ProfileValidator.validateProfileCheckExists(profileDao.getByIdWithLock(id), id);
+        SecurityUtils.checkAccessDenied(ProfileRole.USER.name(), id);
         var updateProfile = mapper.toEntity(findProfile, profile);
         ProfileValidator.validateUpdateResult(profileDao.update(updateProfile), id);
         ProfileEntity savedProfile =
@@ -105,6 +135,22 @@ public class ProfileService {
     public void blockProfile(UUID id) {
         ProfileValidator.validateProfileCheckExists(profileDao.getByIdWithLock(id), id);
         ProfileValidator.validateBlockResult(profileDao.block(id), id);
+    }
+
+    public ProfileEntity findByCredentials(ProfileCredential profileCredential){
+        Optional<ProfileEntity> OptionalProfile = profileDao.getProfileByEmail(profileCredential.getEmail());
+        if (OptionalProfile.isPresent()){
+            ProfileEntity profile = OptionalProfile.get();
+            if (passwordEncoder.matches(profileCredential.getPassword(), profile.getPassword())){
+                return profile;
+            }
+        }
+        throw new RuntimeException("Email or password is not correct");
+    }
+
+    public ProfileEntity getByEmail(String email){
+        return profileDao.getProfileByEmail(email)
+                .orElseThrow(()-> new EntityNotFoundException("Not found profile by email"));
     }
 
 }

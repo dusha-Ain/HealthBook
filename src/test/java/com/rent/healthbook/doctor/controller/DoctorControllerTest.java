@@ -4,6 +4,7 @@ import com.rent.healthbook.doctor.dto.Doctor;
 import com.rent.healthbook.doctor.dto.DoctorUpdate;
 import com.rent.healthbook.doctor.dto.Doctors;
 import com.rent.healthbook.doctor.service.DoctorService;
+import com.rent.healthbook.web.helpers.Pageable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -42,7 +43,7 @@ class DoctorControllerTest {
 
         when(doctorService.addDoctor(any(Doctor.class))).thenReturn(savedDoctor);
 
-        ResponseEntity<Doctor> response = doctorController.addConsultant(doctor);
+        ResponseEntity<Doctor> response = doctorController.addDoctor(doctor);
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -72,14 +73,14 @@ class DoctorControllerTest {
     void getAllDoctorsByFilter_ShouldReturnDoctors() {
         Doctors mockDoctors = new Doctors(java.util.Collections.emptyList());
 
-        when(doctorService.getAllDoctorsByFilter(any(com.rent.healthbook.web.Pageable.class)))
+        when(doctorService.getAllDoctorsByFilter(any(Pageable.class)))
                 .thenReturn(mockDoctors);
 
         ResponseEntity<Doctors> response = doctorController.getAllDoctorsByFilter(10, 0);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        verify(doctorService, times(1)).getAllDoctorsByFilter(any(com.rent.healthbook.web.Pageable.class));
+        verify(doctorService, times(1)).getAllDoctorsByFilter(any(Pageable.class));
     }
 
     @Test
